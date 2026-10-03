@@ -82,3 +82,7 @@ public class KVPair<K extends Comparable<K>, E>
         return theKey.toString() + ", " + theVal.toString();
     }
 }
+
+
+
+command () func 
