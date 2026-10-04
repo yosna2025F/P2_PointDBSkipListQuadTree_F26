@@ -1,12 +1,12 @@
 // -------------------------------------------------------------------------
 /**
- *  Write a one-sentence summary of your class here.
- *  Follow it with additional details about its purpose, what abstraction
- *  it represents, and how to use it.
+ *  Represents a node in the PR Quadtree. All node types in the Quadtree
+ * implement this interface.
  * 
  *  @author yosna
  *  @version Oct 3, 2026
  */
-public interface QuadNode {
+public interface QuadNode 
+{
 
 }
