@@ -9,7 +9,7 @@ import student.TestCase;
  * @author Saanvi
  * @version Oct 3, 2026
  */
-public class QuadTreeTest
+public class QuadTreeTest extends TestCase
 {
     private QuadTree tree;
 
