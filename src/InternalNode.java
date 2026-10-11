@@ -1,11 +1,12 @@
 // -------------------------------------------------------------------------
 /**
- *  Represents an internal node in the PR Quadtree.
+ * Represents an internal node in the PR Quadtree.
  * 
- *  @author yosna
- *  @version Oct 3, 2026
+ * @author yosna
+ * @version Oct 3, 2026
  */
-public class InternalNode implements QuadNode
+public class InternalNode
+    implements QuadNode
 {
     private QuadNode northwest;
     private QuadNode northeast;
@@ -17,10 +18,10 @@ public class InternalNode implements QuadNode
      */
     public InternalNode()
     {
-        northwest = new EmptyNode();
-        northeast = new EmptyNode();
-        southwest = new EmptyNode();
-        southeast = new EmptyNode();
+        northwest = EmptyNode.getInstance();
+        northeast = EmptyNode.getInstance();
+        southwest = EmptyNode.getInstance();
+        southeast = EmptyNode.getInstance();
     }
 
 
@@ -113,5 +114,57 @@ public class InternalNode implements QuadNode
     public void setSoutheast(QuadNode node)
     {
         southeast = node;
+    }
+
+
+    // ----------------------------------------------------------
+    /**
+     * Inserts point into child quadrant.
+     *
+     * @param point
+     *            point being inserted
+     * @param x
+     *            starting x-coordinate
+     * @param y
+     *            starting y-coordinate
+     * @param size
+     *            width and height
+     * @return node after insertion
+     */
+    @Override
+    public QuadNode insert(Point point, int x, int y, int size)
+    {
+        int half = size / 2;
+        int middleX = x + half;
+        int middleY = y + half;
+
+        if (point.getX() < middleX)
+        {
+            if (point.getY() < middleY)
+            {
+                // Northwest
+                northwest = northwest.insert(point, x, y, half);
+            }
+            else
+            {
+                // Southwest
+                southwest = southwest.insert(point, x, middleY, half);
+            }
+        }
+        else
+        {
+            if (point.getY() < middleY)
+            {
+                // Northeast
+                northeast = northeast.insert(point, middleX, y, half);
+            }
+            else
+            {
+                // Southeast
+                southeast = southeast.insert(point, middleX, middleY, half);
+            }
+        }
+
+        return this;
     }
 }
