@@ -1,58 +1,77 @@
 // -------------------------------------------------------------------------
 /**
- *  Represents a point in the database.
+ * Represents a point in the database.
  * 
- *  @author yosna
- *  @version Oct 11, 2026
+ * @author yosna
+ * @version Oct 11, 2026
  */
-public class Point 
+public class Point
 {
-    //~ Fields ................................................................
+    // ~ Fields ................................................................
     private final String name;
     private final int x;
     private final int y;
 
-    
-    
-    //~ Constructors ..........................................................
+    // ~ Constructors ..........................................................
     /**
      * Creates a point.
      *
-     * @param name point name
-     * @param x x-coordinate
-     * @param y y-coordinate
+     * @param name
+     *            point name
+     * @param x
+     *            x-coordinate
+     * @param y
+     *            y-coordinate
      */
-    public Point(String name, int x, int y) 
+    public Point(String name, int x, int y)
     {
         this.name = name;
         this.x = x;
         this.y = y;
     }
-    
-    
-    
-    //~Public  Methods ........................................................
-    public String getName() 
+
+
+    // ~Public Methods ........................................................
+    // ----------------------------------------------------------
+    /**
+     * gets name
+     * 
+     * @return name
+     */
+    public String getName()
     {
         return name;
     }
 
-    public int getX() 
+
+    // ----------------------------------------------------------
+    /**
+     * gets x
+     * 
+     * @return x
+     */
+    public int getX()
     {
         return x;
     }
 
-    public int getY() 
+
+    // ----------------------------------------------------------
+    /**
+     * gets y
+     * 
+     * @return y
+     */
+    public int getY()
     {
         return y;
     }
 
+
     @Override
-    public String toString() 
+    public String toString()
     {
         return "(" + name + ", " + x + ", " + y + ")";
     }
-    
-    
-    
+
 }

@@ -7,6 +7,7 @@
  */
 public class QuadTree
 {
+    private static final int WORLD_SIZE = 1024;
     private QuadNode root;
 
     /**
@@ -14,7 +15,7 @@ public class QuadTree
      */
     public QuadTree()
     {
-        root = new EmptyNode();
+        root = EmptyNode.getInstance();
     }
 
 
@@ -26,5 +27,28 @@ public class QuadTree
     public QuadNode getRoot()
     {
         return root;
+    }
+
+
+    /**
+     * Inserts point into Quadtree.
+     *
+     * @param point
+     *            point to insert
+     */
+    public void insert(Point point)
+    {
+        if (point == null)
+        {
+            return;
+        }
+
+        if (point.getX() < 0 || point.getX() >= WORLD_SIZE || point.getY() < 0
+            || point.getY() >= WORLD_SIZE)
+        {
+            return;
+        }
+
+        root = root.insert(point, 0, 0, WORLD_SIZE);
     }
 }
