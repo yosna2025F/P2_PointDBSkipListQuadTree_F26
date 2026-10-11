@@ -117,4 +117,23 @@ public class SkipListTest
         assertEquals(pair, list.removeByValue("value1"));
         assertEquals(0, list.size());
     }
+    
+    /**
+     * Tests inserting multiple values with the same key.
+     */
+    public void testDuplicateNames() 
+    {
+        TestableRandom.setNextBooleans(false, false);
+
+        list.insert(
+            new KVPair<String, String>("apple", "value1"));
+
+        list.insert(
+            new KVPair<String, String>("apple", "value2"));
+
+        ArrayList<KVPair<String, String>> results =
+            list.search("apple");
+
+        assertEquals(2, results.size());
+    }
 }
