@@ -70,8 +70,7 @@ public class SkipList<K extends Comparable<K>, V>
 
         current = current.forward[0];
 
-        while (current != null
-            && current.element().key().compareTo(key) == 0)
+        while (current != null && current.element().key().compareTo(key) == 0)
         {
             results.add(current.element());
             current = current.forward[0];
@@ -254,16 +253,15 @@ public class SkipList<K extends Comparable<K>, V>
 
         SkipNode temp = head;
 
-        System.out.println(
-            "Node with depth " + (temp.level + 1) + ", Value "
-                + temp.element());
+        System.out
+            .println("Node has depth " + (temp.level + 1) + ", Value (null)");
 
         temp = head.forward[0];
 
         while (temp != null)
         {
             System.out.println(
-                "Node with depth " + (temp.level + 1) + ", Value "
+                "Node has depth " + (temp.level + 1) + ", Value "
                     + temp.element());
 
             temp = temp.forward[0];

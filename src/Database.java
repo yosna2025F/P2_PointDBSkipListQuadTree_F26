@@ -83,6 +83,25 @@ public class Database
 
 
     /**
+     * Prints both data structures.
+     */
+    public void dump()
+    {
+        names.dump();
+        spatial.dump();
+    }
+
+
+    /**
+     * Prints all duplicate point locations.
+     */
+    public void duplicates()
+    {
+        spatial.duplicates();
+    }
+
+
+    /**
      * Checks whether a point is valid.
      *
      * @param name
