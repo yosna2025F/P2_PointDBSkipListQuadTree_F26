@@ -117,5 +117,26 @@ public class Database
         return name != null && name.matches("[A-Za-z][A-Za-z0-9_]*") && x >= 0
             && x < 1024 && y >= 0 && y < 1024;
     }
+    
+    /**
+     * Searches for points within a rectangular region.
+     *
+     * @param x starting x-coordinate
+     * @param y starting y-coordinate
+     * @param w rectangle width
+     * @param h rectangle height
+     */
+    public void regionSearch(int x, int y, int w, int h)
+    {
+        if (w <= 0 || h <= 0)
+        {
+            System.out.println(
+                "Rectangle rejected: (" + x + ", " + y
+                    + ", " + w + ", " + h + ")");
+            return;
+        }
+
+        spatial.regionSearch(x, y, w, h);
+    }
 
 }

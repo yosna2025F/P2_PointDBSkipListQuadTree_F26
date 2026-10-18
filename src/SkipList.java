@@ -40,7 +40,7 @@ public class SkipList<K extends Comparable<K>, V>
      */
     public int randomLevel()
     {
-        int level = 1;
+        int level = 0;
         while (rng.nextBoolean())
             level++;
         return level;
@@ -245,7 +245,7 @@ public class SkipList<K extends Comparable<K>, V>
 
 
     /**
-     * Prints out the SkipList in a human readable format to the console.
+     * Prints the SkipList in the required format.
      */
     public void dump()
     {
@@ -253,23 +253,25 @@ public class SkipList<K extends Comparable<K>, V>
 
         SkipNode temp = head;
 
-        System.out
-            .println("Node has depth " + (temp.level + 1) + ", Value (null)");
+        System.out.println(
+            "Node has depth " + (temp.level + 1)
+                + ", Value (null)");
 
         temp = head.forward[0];
 
         while (temp != null)
         {
             System.out.println(
-                "Node has depth " + (temp.level + 1) + ", Value "
-                    + temp.element());
+                "Node has depth " + (temp.level + 1)
+                    + ", Value " + temp.element().value());
 
             temp = temp.forward[0];
         }
 
         System.out.println("SkipList size is: " + size);
     }
-
+    
+    
     /**
      * This class implements a SkipNode for the SkipList data structure.
      * 
