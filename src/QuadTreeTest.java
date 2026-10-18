@@ -147,4 +147,113 @@ public class QuadTreeTest
         LeafNode leaf = (LeafNode)tree.getRoot();
         assertEquals(2, leaf.getPoints().size());
     }
+
+
+    /**
+     * Tests region search with one matching point.
+     */
+    public void testRegionSearchFound()
+    {
+        tree.insert(new Point("a", 100, 100));
+        tree.insert(new Point("b", 500, 500));
+
+        tree.regionSearch(50, 50, 100, 100);
+
+        assertTrue(
+            systemOut().getHistory().contains("Point found: (a, 100, 100)"));
+
+        assertFalse(
+            systemOut().getHistory().contains("Point found: (b, 500, 500)"));
+    }
+
+
+    /**
+     * Tests region search with no matching points.
+     */
+    public void testRegionSearchEmpty()
+    {
+        tree.insert(new Point("a", 100, 100));
+
+        tree.regionSearch(500, 500, 50, 50);
+
+        assertFalse(systemOut().getHistory().contains("Point found:"));
+    }
+
+
+    /**
+     * Tests rejecting a rectangle with invalid width.
+     */
+    public void testInvalidRegionWidth()
+    {
+        tree.regionSearch(5, 5, -2, 10);
+
+        assertTrue(
+            systemOut().getHistory()
+                .contains("Rectangle rejected: (5, 5, -2, 10)"));
+    }
+
+
+    /**
+     * Tests rejecting a rectangle with invalid height.
+     */
+    public void testInvalidRegionHeight()
+    {
+        tree.regionSearch(5, 5, 10, 0);
+
+        assertTrue(
+            systemOut().getHistory()
+                .contains("Rectangle rejected: (5, 5, 10, 0)"));
+    }
+
+
+    /**
+     * Tests searching an empty Quadtree.
+     */
+    public void testRegionSearchEmptyTree()
+    {
+        tree.regionSearch(0, 0, 100, 100);
+
+        assertTrue(
+            systemOut().getHistory().contains("1 quadtree nodes visited"));
+    }
+
+
+    /**
+     * Tests finding multiple points in a region.
+     */
+    public void testRegionSearchMultiple()
+    {
+        tree.insert(new Point("a", 10, 10));
+        tree.insert(new Point("b", 20, 20));
+        tree.insert(new Point("c", 500, 500));
+
+        tree.regionSearch(0, 0, 100, 100);
+
+        assertTrue(
+            systemOut().getHistory().contains("Point found: (a, 10, 10)"));
+
+        assertTrue(
+            systemOut().getHistory().contains("Point found: (b, 20, 20)"));
+
+        assertFalse(
+            systemOut().getHistory().contains("Point found: (c, 500, 500)"));
+    }
+
+
+    /**
+     * Tests identifying duplicate coordinates.
+     */
+    public void testDuplicates()
+    {
+        tree.insert(new Point("a", 10, 20));
+        tree.insert(new Point("b", 10, 20));
+        tree.insert(new Point("c", 30, 40));
+
+        tree.duplicates();
+
+        assertTrue(systemOut().getHistory().contains("Duplicate points:"));
+
+        assertTrue(systemOut().getHistory().contains("(10, 20)"));
+    }
+
 }

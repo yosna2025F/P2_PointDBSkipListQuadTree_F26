@@ -202,4 +202,193 @@ public class QuadTree
         }
     }
 
+
+    /**
+     * Searches for points inside a rectangular region.
+     *
+     * @param x
+     *            rectangle x-coordinate
+     * @param y
+     *            rectangle y-coordinate
+     * @param width
+     *            rectangle width
+     * @param height
+     *            rectangle height
+     */
+    public void regionSearch(int x, int y, int width, int height)
+    {
+        if (width <= 0 || height <= 0)
+        {
+            System.out.println(
+                "Rectangle rejected: (" + x + ", " + y + ", " + width + ", "
+                    + height + ")");
+            return;
+        }
+
+        System.out.println(
+            "Points intersecting region (" + x + ", " + y + ", " + width + ", "
+                + height + "):");
+
+        int visited =
+            searchRegionNode(root, 0, 0, WORLD_SIZE, x, y, width, height);
+
+        System.out.println(visited + " quadtree nodes visited");
+    }
+
+
+    /**
+     * Checks whether two rectangular regions intersect.
+     *
+     * @param x1
+     *            rectangle 1 x-coordinate
+     * @param y1
+     *            rectangle 1 y-coordinate
+     * @param w1
+     *            rectangle 1 width
+     * @param h1
+     *            rectangle 1 height
+     * @param x2
+     *            rectangle 2 x-coordinate
+     * @param y2
+     *            rectangle 2 y-coordinate
+     * @param w2
+     *            rectangle 2 width
+     * @param h2
+     *            rectangle 2 height
+     * @return true if the rectangles intersect
+     */
+    private boolean intersects(
+        int x1,
+        int y1,
+        int w1,
+        int h1,
+        int x2,
+        int y2,
+        int w2,
+        int h2)
+    {
+        return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+    }
+
+
+    /**
+     * Recursively searches nodes intersecting a rectangle.
+     *
+     * @param node
+     *            current node
+     * @param nodeX
+     *            node x-coordinate
+     * @param nodeY
+     *            node y-coordinate
+     * @param size
+     *            node region size
+     * @param x
+     *            rectangle x-coordinate
+     * @param y
+     *            rectangle y-coordinate
+     * @param width
+     *            rectangle width
+     * @param height
+     *            rectangle height
+     * @return number of Quadtree nodes visited
+     */
+    private int searchRegionNode(
+        QuadNode node,
+        int nodeX,
+        int nodeY,
+        int size,
+        int x,
+        int y,
+        int width,
+        int height)
+    {
+        int visited = 1;
+
+        if (node instanceof EmptyNode)
+        {
+            return visited;
+        }
+
+        if (node instanceof LeafNode)
+        {
+            LeafNode leaf = (LeafNode)node;
+
+            for (Point point : leaf.getPoints())
+            {
+                if (point.getX() >= x && point.getX() < (long)x + width
+                    && point.getY() >= y && point.getY() < (long)y + height)
+                {
+                    System.out.println("Point found: " + point);
+                }
+            }
+
+            return visited;
+        }
+
+        InternalNode internal = (InternalNode)node;
+        int half = size / 2;
+
+        if (intersects(nodeX, nodeY, half, half, x, y, width, height))
+        {
+            visited += searchRegionNode(
+                internal.getNorthwest(),
+                nodeX,
+                nodeY,
+                half,
+                x,
+                y,
+                width,
+                height);
+        }
+
+        if (intersects(nodeX + half, nodeY, half, half, x, y, width, height))
+        {
+            visited += searchRegionNode(
+                internal.getNortheast(),
+                nodeX + half,
+                nodeY,
+                half,
+                x,
+                y,
+                width,
+                height);
+        }
+
+        if (intersects(nodeX, nodeY + half, half, half, x, y, width, height))
+        {
+            visited += searchRegionNode(
+                internal.getSouthwest(),
+                nodeX,
+                nodeY + half,
+                half,
+                x,
+                y,
+                width,
+                height);
+        }
+
+        if (intersects(
+            nodeX + half,
+            nodeY + half,
+            half,
+            half,
+            x,
+            y,
+            width,
+            height))
+        {
+            visited += searchRegionNode(
+                internal.getSoutheast(),
+                nodeX + half,
+                nodeY + half,
+                half,
+                x,
+                y,
+                width,
+                height);
+        }
+
+        return visited;
+    }
+
 }
