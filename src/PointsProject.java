@@ -46,8 +46,19 @@ public class PointsProject {
 
                 String[] parts = line.split("\\s+");
 
-                switch (parts[0]) 
+                switch (parts[0])
                 {
+                    case "insert":
+                        database.insert(
+                            parts[1],
+                            Integer.parseInt(parts[2]),
+                            Integer.parseInt(parts[3]));
+                        break;
+
+                    case "search":
+                        database.search(parts[1]);
+                        break;
+
                     case "duplicates":
                         database.duplicates();
                         break;
@@ -62,6 +73,9 @@ public class PointsProject {
 
                     case "dump":
                         database.dump();
+                        break;
+
+                    default:
                         break;
                 }
             }

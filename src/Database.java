@@ -3,8 +3,8 @@
 import java.util.ArrayList;
 
 /**
- * manages database of points ======= Manages the point database using a
- * SkipList and QuadTree. >>>>>>>
+ * manages database of points. Manages the point database using a
+ * SkipList and QuadTree. 
  * 
  * @author yosna
  * @version Oct 11, 2026
