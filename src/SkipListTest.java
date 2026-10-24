@@ -359,6 +359,11 @@ public class SkipListTest
     }
     
 
+    
+    /**
+     * Tests inserting nodes with different randomly generated levels
+     * and verifies that searching and removing nodes work correctly.
+     */
     public void testDifferentNodeLevels()
     {
         student.TestableRandom.setNextBooleans(
