@@ -230,4 +230,174 @@ public class DatabaseTest
         assertTrue(output.contains("SkipList dump:"));
         assertTrue(output.contains("QuadTree dump:"));
     }
+    
+    /**
+     * Tests removing a point by name.
+     */
+    public void testRemoveByName()
+    {
+        database.insert("alpha", 10, 20);
+        database.remove("alpha");
+
+        assertTrue(systemOut().getHistory().contains(
+            "Point removed: (alpha, 10, 20)"));
+
+        database.search("alpha");
+
+        assertTrue(systemOut().getHistory().contains(
+            "Point not found: alpha"));
+    }
+
+
+    /**
+     * Tests removing a point by coordinates.
+     */
+    public void testRemoveByCoordinates()
+    {
+        database.insert("alpha", 10, 20);
+        database.remove(10, 20);
+
+        assertTrue(systemOut().getHistory().contains(
+            "Point removed: (alpha, 10, 20)"));
+
+        database.search("alpha");
+
+        assertTrue(systemOut().getHistory().contains(
+            "Point not found: alpha"));
+    }
+
+
+    /**
+     * Tests removing a nonexistent name.
+     */
+    public void testRemoveMissingName()
+    {
+        database.remove("missing");
+
+        assertTrue(systemOut().getHistory().contains(
+            "Point not removed: missing"));
+    }
+
+
+    /**
+     * Tests removing nonexistent coordinates.
+     */
+    public void testRemoveMissingCoordinates()
+    {
+        database.remove(10, 20);
+
+        assertTrue(systemOut().getHistory().contains(
+            "Point not found: (10, 20)"));
+    }
+
+
+    /**
+     * Tests rejecting invalid removal coordinates.
+     */
+    public void testRemoveInvalidCoordinates()
+    {
+        database.remove(-1, 20);
+        database.remove(1024, 20);
+
+        String output = systemOut().getHistory();
+
+        assertTrue(output.contains("Point rejected: (-1, 20)"));
+        assertTrue(output.contains("Point rejected: (1024, 20)"));
+    }
+
+
+    /**
+     * Tests removing only one of two points with the same name.
+     */
+    public void testRemoveDuplicateName()
+    {
+        database.insert("alpha", 10, 20);
+        database.insert("alpha", 30, 40);
+
+        database.remove("alpha");
+        database.search("alpha");
+
+        String output = systemOut().getHistory();
+
+        assertTrue(output.contains("Point removed: (alpha,"));
+        assertFalse(output.contains("Point not found: alpha"));
+    }
+    
+
+    /**
+     * Tests all point validation conditions.
+     */
+    public void testIsValidPointBranches()
+    {
+        assertFalse(database.isValidPoint(null, 10, 20));
+        assertFalse(database.isValidPoint("1invalid", 10, 20));
+        assertFalse(database.isValidPoint("alpha", -1, 20));
+        assertFalse(database.isValidPoint("alpha", 1024, 20));
+        assertFalse(database.isValidPoint("alpha", 10, -1));
+        assertFalse(database.isValidPoint("alpha", 10, 1024));
+    
+        assertTrue(database.isValidPoint("alpha", 0, 0));
+        assertTrue(database.isValidPoint("alpha", 1023, 1023));
+    }
+    
+
+    /**
+     * Tests both valid and invalid region dimensions.
+     */
+    public void testRegionSearchBranches()
+    {
+        database.regionSearch(0, 0, 10, 10);
+        database.regionSearch(0, 0, 0, 10);
+        database.regionSearch(0, 0, 10, 0);
+        database.regionSearch(0, 0, -1, -1);
+    
+        String output = systemOut().getHistory();
+    
+        assertTrue(output.contains(
+            "Points intersecting region (0, 0, 10, 10):"));
+    
+        assertTrue(output.contains(
+            "Rectangle rejected: (0, 0, 0, 10)"));
+    
+        assertTrue(output.contains(
+            "Rectangle rejected: (0, 0, 10, 0)"));
+    
+        assertTrue(output.contains(
+            "Rectangle rejected: (0, 0, -1, -1)"));
+    }
+    
+
+    /**
+     * Tests every coordinate validation branch for removal.
+     */
+    public void testRemoveCoordinateBranches()
+    {
+        database.remove(-1, 10);
+        database.remove(1024, 10);
+        database.remove(10, -1);
+        database.remove(10, 1024);
+    
+        String output = systemOut().getHistory();
+    
+        assertTrue(output.contains("Point rejected: (-1, 10)"));
+        assertTrue(output.contains("Point rejected: (1024, 10)"));
+        assertTrue(output.contains("Point rejected: (10, -1)"));
+        assertTrue(output.contains("Point rejected: (10, 1024)"));
+    }
+    
+    
+    /**
+     * Tests removal with valid coordinates.
+     */
+    public void testRemoveValidCoordinates()
+    {
+        database.insert("alpha", 10, 20);
+        database.remove(10, 20);
+    
+        assertTrue(systemOut().getHistory().contains(
+            "Point removed: (alpha, 10, 20)"));
+    }
+
+
+
 }

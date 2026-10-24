@@ -138,5 +138,61 @@ public class Database
 
         spatial.regionSearch(x, y, w, h);
     }
+    
+
+    /**
+     * Removes one point with the given name.
+     *
+     * @param name the name to remove
+     */
+    public void remove(String name)
+    {
+        KVPair<String, Point> removed = names.remove(name);
+    
+        if (removed == null)
+        {
+            System.out.println("Point not removed: " + name);
+            return;
+        }
+    
+        Point point = removed.value();
+        spatial.remove(point);
+    
+        System.out.println("Point removed: " + point);
+    }
+
+
+    /**
+     * Removes one point at the given coordinates.
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     */
+    public void remove(int x, int y)
+    {
+        if (x < 0 || x >= 1024 || y < 0 || y >= 1024)
+        {
+            System.out.println(
+                "Point rejected: (" + x + ", " + y + ")");
+            return;
+        }
+    
+        Point removed = spatial.remove(x, y);
+    
+        if (removed == null)
+        {
+            System.out.println(
+                "Point not found: (" + x + ", " + y + ")");
+            return;
+        }
+    
+        names.removeByValue(removed);
+    
+        System.out.println("Point removed: " + removed);
+    }
+        
+        
+        
+    
 
 }

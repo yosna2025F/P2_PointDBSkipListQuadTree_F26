@@ -650,5 +650,7 @@ public class QuadTree
             combined.getPoints().addAll(leaf.getPoints());
         }
     }
+    
+    
 
 }
