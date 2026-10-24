@@ -256,4 +256,112 @@ public class QuadTreeTest
         assertTrue(systemOut().getHistory().contains("(10, 20)"));
     }
 
+
+    /**
+     * Tests removing a point by coordinates.
+     */
+    public void testRemoveCoordinates()
+    {
+        tree.insert(new Point("a", 100, 100));
+
+        Point removed = tree.remove(100, 100);
+
+        assertNotNull(removed);
+        assertEquals("a", removed.getName());
+        assertTrue(tree.getRoot() instanceof EmptyNode);
+    }
+
+
+    /**
+     * Tests removing a missing point.
+     */
+    public void testRemoveMissing()
+    {
+        tree.insert(new Point("a", 100, 100));
+
+        Point removed = tree.remove(200, 200);
+
+        assertNull(removed);
+        assertTrue(tree.getRoot() instanceof LeafNode);
+    }
+
+
+    /**
+     * Tests removing a specific point.
+     */
+    public void testRemovePoint()
+    {
+        Point first = new Point("a", 100, 100);
+        Point second = new Point("b", 100, 100);
+
+        tree.insert(first);
+        tree.insert(second);
+
+        assertTrue(tree.remove(first));
+
+        LeafNode leaf = (LeafNode)tree.getRoot();
+
+        assertEquals(1, leaf.getPoints().size());
+        assertSame(second, leaf.getPoints().get(0));
+    }
+
+
+    /**
+     * Tests collapsing after removal.
+     */
+    public void testCollapseAfterRemoval()
+    {
+        tree.insert(new Point("a", 100, 100));
+        tree.insert(new Point("b", 600, 100));
+        tree.insert(new Point("c", 100, 600));
+        tree.insert(new Point("d", 600, 600));
+
+        assertTrue(tree.getRoot() instanceof InternalNode);
+
+        tree.remove(600, 600);
+
+        assertTrue(tree.getRoot() instanceof LeafNode);
+
+        LeafNode leaf = (LeafNode)tree.getRoot();
+
+        assertEquals(3, leaf.getPoints().size());
+    }
+
+
+    /**
+     * Tests removing all points.
+     */
+    public void testRemoveAll()
+    {
+        tree.insert(new Point("a", 100, 100));
+        tree.insert(new Point("b", 600, 600));
+
+        tree.remove(100, 100);
+        tree.remove(600, 600);
+
+        assertSame(EmptyNode.getInstance(), tree.getRoot());
+    }
+
+
+    /**
+     * Tests removing a point from a split tree.
+     */
+    public void testRemoveFromInternal()
+    {
+        tree.insert(new Point("a", 100, 100));
+        tree.insert(new Point("b", 200, 200));
+        tree.insert(new Point("c", 300, 300));
+        tree.insert(new Point("d", 600, 600));
+        tree.insert(new Point("e", 700, 700));
+
+        assertTrue(tree.getRoot() instanceof InternalNode);
+
+        Point removed = tree.remove(700, 700);
+
+        assertNotNull(removed);
+        assertEquals("e", removed.getName());
+
+        assertTrue(tree.getRoot() instanceof InternalNode);
+    }
+
 }

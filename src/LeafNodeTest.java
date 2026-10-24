@@ -82,12 +82,24 @@ public class LeafNodeTest
      */
     public void testSameCoordinates()
     {
+        QuadNode result = leaf;
+
         for (int i = 0; i < 5; i++)
         {
-            leaf.insert(new Point("p" + i, 100, 100), 0, 0, 1024);
+            result = leaf.insert(new Point("p" + i, 100, 100), 0, 0, 1024);
         }
 
+        assertSame(leaf, result);
         assertEquals(5, leaf.getPoints().size());
+        assertTrue(leaf.allSameCoordinates());
+    }
+
+
+    /**
+     * Tests same coordinates for an empty leaf.
+     */
+    public void testEmptySameCoordinates()
+    {
         assertTrue(leaf.allSameCoordinates());
     }
 
@@ -105,8 +117,7 @@ public class LeafNodeTest
 
 
     /**
-     * Tests that points with the same location but different names remain in
-     * one leaf.
+     * Tests that points with same name in different coordinates in one leaf.
      */
     public void testDuplicateNamesDifferentCoordinates()
     {
@@ -115,5 +126,28 @@ public class LeafNodeTest
 
         assertEquals(2, leaf.getPoints().size());
         assertFalse(leaf.allSameCoordinates());
+    }
+
+
+    /**
+     * Tests splitting a leaf containing duplicate points.
+     */
+    public void testSplitWithDuplicates()
+    {
+        leaf.insert(new Point("a", 100, 100), 0, 0, 1024);
+        leaf.insert(new Point("b", 100, 100), 0, 0, 1024);
+        leaf.insert(new Point("c", 100, 100), 0, 0, 1024);
+
+        QuadNode result = leaf.insert(new Point("d", 600, 600), 0, 0, 1024);
+
+        assertTrue(result instanceof InternalNode);
+
+        InternalNode internal = (InternalNode)result;
+
+        LeafNode northwest = (LeafNode)internal.getNorthwest();
+        LeafNode southeast = (LeafNode)internal.getSoutheast();
+
+        assertEquals(3, northwest.getPoints().size());
+        assertEquals(1, southeast.getPoints().size());
     }
 }

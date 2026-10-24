@@ -113,6 +113,17 @@ public class InternalNodeTest
 
 
     /**
+     * Tests that insertion returns the same internal node.
+     */
+    public void testInsertReturnsSameNode()
+    {
+        QuadNode result = node.insert(new Point("a", 100, 100), 0, 0, 1024);
+
+        assertSame(node, result);
+    }
+
+
+    /**
      * Tests inserting points on the quadrant boundaries.
      */
     public void testQuadrantBoundaries()
@@ -125,4 +136,30 @@ public class InternalNodeTest
         assertTrue(node.getSouthwest() instanceof LeafNode);
         assertTrue(node.getSoutheast() instanceof LeafNode);
     }
+
+
+    /**
+     * Tests splitting a child leaf into an internal node.
+     */
+    public void testChildSplit()
+    {
+        node.insert(new Point("a", 100, 100), 0, 0, 1024);
+        node.insert(new Point("b", 200, 100), 0, 0, 1024);
+        node.insert(new Point("c", 100, 200), 0, 0, 1024);
+        node.insert(new Point("d", 200, 200), 0, 0, 1024);
+
+        assertTrue(node.getNorthwest() instanceof InternalNode);
+
+        InternalNode child = (InternalNode)node.getNorthwest();
+
+        assertTrue(child.getNorthwest() instanceof InternalNode);
+
+        InternalNode deeper = (InternalNode)child.getNorthwest();
+
+        assertTrue(deeper.getNorthwest() instanceof LeafNode);
+        assertTrue(deeper.getNortheast() instanceof LeafNode);
+        assertTrue(deeper.getSouthwest() instanceof LeafNode);
+        assertTrue(deeper.getSoutheast() instanceof LeafNode);
+    }
+
 }

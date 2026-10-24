@@ -66,8 +66,17 @@ public class EmptyNodeTest
      */
     public void testFlyweightUnchanged()
     {
-        empty.insert(new Point("a", 100, 100), 0, 0, 1024);
+        QuadNode first = empty.insert(new Point("a", 100, 100), 0, 0, 1024);
+
+        QuadNode second = empty.insert(new Point("b", 200, 200), 0, 0, 1024);
 
         assertSame(empty, EmptyNode.getInstance());
+        assertNotSame(first, second);
+
+        LeafNode firstLeaf = (LeafNode)first;
+        LeafNode secondLeaf = (LeafNode)second;
+
+        assertEquals(1, firstLeaf.getPoints().size());
+        assertEquals(1, secondLeaf.getPoints().size());
     }
 }

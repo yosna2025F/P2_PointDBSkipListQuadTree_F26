@@ -391,4 +391,264 @@ public class QuadTree
         return visited;
     }
 
+
+    /**
+     * Removes a point from Quadtree.
+     *
+     * @param point
+     *            point to remove
+     * @return true if point was removed
+     */
+    public boolean remove(Point point)
+    {
+        if (point == null)
+        {
+            return false;
+        }
+
+        Point[] removed = new Point[1];
+
+        root = removeNode(
+            root,
+            point.getX(),
+            point.getY(),
+            point,
+            0,
+            0,
+            WORLD_SIZE,
+            removed);
+
+        return removed[0] != null;
+    }
+
+
+    /**
+     * Removes point at coordinates.
+     *
+     * @param x
+     *            x-coordinate
+     * @param y
+     *            y-coordinate
+     * @return removed point
+     */
+    public Point remove(int x, int y)
+    {
+        if (x < 0 || x >= WORLD_SIZE || y < 0 || y >= WORLD_SIZE)
+        {
+            return null;
+        }
+
+        Point[] removed = new Point[1];
+
+        root = removeNode(root, x, y, null, 0, 0, WORLD_SIZE, removed);
+
+        return removed[0];
+    }
+
+
+    /**
+     * Recursively removes a point from the Quadtree.
+     *
+     * @param node
+     *            current node
+     * @param pointX
+     *            target x-coordinate
+     * @param pointY
+     *            target y-coordinate
+     * @param target
+     *            point for coordinate removal
+     * @param x
+     *            current region x-coordinate
+     * @param y
+     *            current region y-coordinate
+     * @param size
+     *            current region size
+     * @param removed
+     *            stores the removed point
+     * @return updated node
+     */
+    private QuadNode removeNode(
+        QuadNode node,
+        int pointX,
+        int pointY,
+        Point target,
+        int x,
+        int y,
+        int size,
+        Point[] removed)
+    {
+        if (node instanceof EmptyNode)
+        {
+            return node;
+        }
+
+        if (node instanceof LeafNode)
+        {
+            LeafNode leaf = (LeafNode)node;
+
+            for (int i = 0; i < leaf.getPoints().size(); i++)
+            {
+                Point current = leaf.getPoints().get(i);
+
+                boolean matches;
+
+                if (target != null)
+                {
+                    matches = current == target;
+                }
+                else
+                {
+                    matches =
+                        current.getX() == pointX && current.getY() == pointY;
+                }
+
+                if (matches)
+                {
+                    removed[0] = leaf.getPoints().remove(i);
+
+                    if (leaf.getPoints().isEmpty())
+                    {
+                        return EmptyNode.getInstance();
+                    }
+
+                    return leaf;
+                }
+            }
+
+            return leaf;
+        }
+
+        InternalNode internal = (InternalNode)node;
+
+        int half = size / 2;
+        int middleX = x + half;
+        int middleY = y + half;
+
+        if (pointX < middleX)
+        {
+            if (pointY < middleY)
+            {
+                internal.setNorthwest(
+                    removeNode(
+                        internal.getNorthwest(),
+                        pointX,
+                        pointY,
+                        target,
+                        x,
+                        y,
+                        half,
+                        removed));
+            }
+            else
+            {
+                internal.setSouthwest(
+                    removeNode(
+                        internal.getSouthwest(),
+                        pointX,
+                        pointY,
+                        target,
+                        x,
+                        middleY,
+                        half,
+                        removed));
+            }
+        }
+        else
+        {
+            if (pointY < middleY)
+            {
+                internal.setNortheast(
+                    removeNode(
+                        internal.getNortheast(),
+                        pointX,
+                        pointY,
+                        target,
+                        middleX,
+                        y,
+                        half,
+                        removed));
+            }
+            else
+            {
+                internal.setSoutheast(
+                    removeNode(
+                        internal.getSoutheast(),
+                        pointX,
+                        pointY,
+                        target,
+                        middleX,
+                        middleY,
+                        half,
+                        removed));
+            }
+        }
+
+        if (removed[0] == null)
+        {
+            return internal;
+        }
+
+        return collapseNode(internal);
+    }
+
+
+    /**
+     * Collapses an internal node when children can be combined into one leaf.
+     *
+     * @param internal
+     *            internal nod
+     * @return collapsed leaf, empty node, or original node
+     */
+    private QuadNode collapseNode(InternalNode internal)
+    {
+        QuadNode nw = internal.getNorthwest();
+        QuadNode ne = internal.getNortheast();
+        QuadNode sw = internal.getSouthwest();
+        QuadNode se = internal.getSoutheast();
+
+        if (nw instanceof InternalNode || ne instanceof InternalNode
+            || sw instanceof InternalNode || se instanceof InternalNode)
+        {
+            return internal;
+        }
+
+        LeafNode combined = new LeafNode();
+
+        addLeafPoints(nw, combined);
+        addLeafPoints(ne, combined);
+        addLeafPoints(sw, combined);
+        addLeafPoints(se, combined);
+
+        if (combined.getPoints().isEmpty())
+        {
+            return EmptyNode.getInstance();
+        }
+
+        if (combined.getPoints().size() <= 3 || combined.allSameCoordinates())
+        {
+            return combined;
+        }
+
+        return internal;
+    }
+
+
+    /**
+     * Adds points from a leaf to another leaf.
+     *
+     * @param node
+     *            node containing points
+     * @param combined
+     *            leaf getting the points
+     */
+    private void addLeafPoints(QuadNode node, LeafNode combined)
+    {
+        if (node instanceof LeafNode)
+        {
+            LeafNode leaf = (LeafNode)node;
+
+            combined.getPoints().addAll(leaf.getPoints());
+        }
+    }
+
 }
