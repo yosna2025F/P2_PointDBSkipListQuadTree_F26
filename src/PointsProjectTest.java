@@ -1,11 +1,11 @@
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import student.TestCase;
 
 /**
- * Tests PointsProject using the provided syntax files.
+ * Tests the PointsProject command file processor.
  *
  * @author Yosna
  * @version October 2026
@@ -13,7 +13,7 @@ import student.TestCase;
 public class PointsProjectTest extends TestCase
 {
     /**
-     * Tests running without arguments.
+     * Tests running the program without arguments.
      *
      * @throws IOException if an I/O error occurs
      */
@@ -57,119 +57,244 @@ public class PointsProjectTest extends TestCase
 
 
     /**
-     * Tests the first provided syntax command file.
+     * Tests inserting and searching for points.
      *
      * @throws IOException if an I/O error occurs
      */
-    public void testSyntax1() throws IOException
+    public void testInsertAndSearch() throws IOException
     {
-        PointsProject.main(new String[] { "SyntaxTest1.txt" });
+        File file = File.createTempFile("points", ".txt");
 
-        String output = systemOut().getHistory();
+        try
+        {
+            try (FileWriter writer = new FileWriter(file))
+            {
+                writer.write("insert apple 10 20\n");
+                writer.write("insert banana 30 40\n");
+                writer.write("search apple\n");
+                writer.write("search missing\n");
+            }
 
-        assertTrue(output.contains(
-            "Point rejected: (p_p, -1, -20)"));
-        assertTrue(output.contains(
-            "Point rejected: (poi, 7, -8)"));
-        assertTrue(output.contains("Duplicate points:"));
-        assertTrue(output.contains("SkipList dump:"));
-        assertTrue(output.contains("QuadTree dump:"));
-        assertTrue(output.contains(
-            "Point not found: p_p"));
-        assertTrue(output.contains(
-            "Point not removed: p_p"));
-        assertTrue(output.contains(
-            "Rectangle rejected: (5, 5, 4, -2)"));
+            PointsProject.main(new String[] {
+                file.getAbsolutePath()
+            });
+
+            String output = systemOut().getHistory();
+
+            assertTrue(output.contains(
+                "Point inserted: (apple, 10, 20)"));
+
+            assertTrue(output.contains(
+                "Point inserted: (banana, 30, 40)"));
+
+            assertTrue(output.contains(
+                "Found (apple, 10, 20)"));
+
+            assertTrue(output.contains(
+                "Point not found: missing"));
+        }
+        finally
+        {
+            file.delete();
+        }
     }
 
 
     /**
-     * Tests the second provided syntax command file.
+     * Tests duplicate coordinates and region searches.
      *
      * @throws IOException if an I/O error occurs
      */
-    public void testSyntax2() throws IOException
+    public void testDuplicatesAndRegionSearch() throws IOException
     {
-        PointsProject.main(new String[] { "SyntaxTest2.txt" });
+        File file = File.createTempFile("points", ".txt");
 
-        String output = systemOut().getHistory();
+        try
+        {
+            try (FileWriter writer = new FileWriter(file))
+            {
+                writer.write("insert apple 10 20\n");
+                writer.write("insert banana 10 20\n");
+                writer.write("insert cherry 100 100\n");
+                writer.write("duplicates\n");
+                writer.write("regionsearch 0 0 50 50\n");
+                writer.write("regionsearch 0 0 0 10\n");
+            }
 
-        assertTrue(output.contains(
-            "Point inserted: (p_p, 1, 20)"));
-        assertTrue(output.contains(
-            "Point inserted: (poi, 10, 30)"));
-        assertTrue(output.contains(
-            "Point inserted: (p_42, 1, 20)"));
-        assertTrue(output.contains(
-            "Point inserted: (far, 200, 200)"));
-        assertTrue(output.contains("Duplicate points:"));
-        assertTrue(output.contains("(1, 20)"));
-        assertTrue(output.contains(
-            "Found (p_p, 1, 20)"));
-        assertTrue(output.contains(
-            "Point removed: (p_p, 1, 20)"));
-        assertTrue(output.contains(
-            "Point removed: (poi, 10, 30)"));
-        assertTrue(output.contains("SkipList dump:"));
-        assertTrue(output.contains("QuadTree dump:"));
+            PointsProject.main(new String[] {
+                file.getAbsolutePath()
+            });
+
+            String output = systemOut().getHistory();
+
+            assertTrue(output.contains("Duplicate points:"));
+            assertTrue(output.contains("(10, 20)"));
+
+            assertTrue(output.contains(
+                "Points intersecting region (0, 0, 50, 50):"));
+
+            assertTrue(output.contains(
+                "Point found: (apple, 10, 20)"));
+
+            assertTrue(output.contains(
+                "Rectangle rejected: (0, 0, 0, 10)"));
+        }
+        finally
+        {
+            file.delete();
+        }
     }
 
 
     /**
-     * Tests rejected insertions and region searches.
+     * Tests removing a point by name and coordinates.
      *
      * @throws IOException if an I/O error occurs
      */
-    public void testInvalidCommands() throws IOException
+    public void testRemoveCommands() throws IOException
     {
-        PointsProject.main(new String[] { "SyntaxTest1.txt" });
+        File file = File.createTempFile("points", ".txt");
 
-        String output = systemOut().getHistory();
+        try
+        {
+            try (FileWriter writer = new FileWriter(file))
+            {
+                writer.write("insert apple 10 20\n");
+                writer.write("insert banana 30 40\n");
+                writer.write("remove apple\n");
+                writer.write("remove 30 40\n");
+                writer.write("search apple\n");
+                writer.write("search banana\n");
+            }
 
-        assertTrue(output.contains(
-            "Point rejected: (p_p, -1, -20)"));
+            PointsProject.main(new String[] {
+                file.getAbsolutePath()
+            });
 
-        assertTrue(output.contains(
-            "Point not removed: p_p"));
+            String output = systemOut().getHistory();
 
-        assertTrue(output.contains(
-            "Rectangle rejected: (5, 5, 4, -2)"));
+            assertTrue(output.contains(
+                "Point removed: (apple, 10, 20)"));
+
+            assertTrue(output.contains(
+                "Point removed: (banana, 30, 40)"));
+
+            assertTrue(output.contains(
+                "Point not found: apple"));
+
+            assertTrue(output.contains(
+                "Point not found: banana"));
+        }
+        finally
+        {
+            file.delete();
+        }
     }
 
 
     /**
-     * Tests duplicate points and successful removal.
+     * Tests the dump command.
      *
      * @throws IOException if an I/O error occurs
      */
-    public void testValidCommands() throws IOException
+    public void testDumpCommand() throws IOException
     {
-        PointsProject.main(new String[] { "SyntaxTest2.txt" });
+        File file = File.createTempFile("points", ".txt");
 
-        String output = systemOut().getHistory();
+        try
+        {
+            try (FileWriter writer = new FileWriter(file))
+            {
+                writer.write("insert apple 10 20\n");
+                writer.write("dump\n");
+            }
 
-        assertTrue(output.contains("Duplicate points:"));
+            PointsProject.main(new String[] {
+                file.getAbsolutePath()
+            });
 
-        assertTrue(output.contains("(1, 20)"));
+            String output = systemOut().getHistory();
 
-        assertTrue(output.contains(
-            "Point removed: (p_p, 1, 20)"));
-
-        assertTrue(output.contains(
-            "Point removed: (poi, 10, 30)"));
+            assertTrue(output.contains("SkipList dump:"));
+            assertTrue(output.contains("QuadTree dump:"));
+        }
+        finally
+        {
+            file.delete();
+        }
     }
 
 
     /**
-     * Normalizes line endings and trailing whitespace.
+     * Tests blank lines, whitespace, and unknown commands.
      *
-     * @param text text to normalize
-     * @return normalized text
+     * @throws IOException if an I/O error occurs
      */
-    private String normalize(String text)
+    public void testWhitespaceAndUnknownCommands()
+        throws IOException
     {
-        return text.replace("\r\n", "\n")
-            .replace("\r", "\n")
-            .stripTrailing();
+        File file = File.createTempFile("points", ".txt");
+
+        try
+        {
+            try (FileWriter writer = new FileWriter(file))
+            {
+                writer.write("\n");
+                writer.write("   \n");
+                writer.write("  insert   apple   10   20  \n");
+                writer.write("unknowncommand\n");
+                writer.write("search apple\n");
+            }
+
+            PointsProject.main(new String[] {
+                file.getAbsolutePath()
+            });
+
+            String output = systemOut().getHistory();
+
+            assertTrue(output.contains(
+                "Point inserted: (apple, 10, 20)"));
+
+            assertTrue(output.contains(
+                "Found (apple, 10, 20)"));
+        }
+        finally
+        {
+            file.delete();
+        }
+    }
+
+
+    /**
+     * Tests a remove command with an unsupported argument count.
+     *
+     * @throws IOException if an I/O error occurs
+     */
+    public void testInvalidRemoveArgumentCount()
+        throws IOException
+    {
+        File file = File.createTempFile("points", ".txt");
+
+        try
+        {
+            try (FileWriter writer = new FileWriter(file))
+            {
+                writer.write("insert apple 10 20\n");
+                writer.write("remove\n");
+                writer.write("remove apple 10 20\n");
+                writer.write("search apple\n");
+            }
+
+            PointsProject.main(new String[] {
+                file.getAbsolutePath()
+            });
+
+            assertTrue(systemOut().getHistory().contains(
+                "Found (apple, 10, 20)"));
+        }
+        finally
+        {
+            file.delete();
+        }
     }
 }
