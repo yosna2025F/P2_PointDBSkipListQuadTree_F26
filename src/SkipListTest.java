@@ -59,8 +59,7 @@ public class SkipListTest
 
         list.insert(pair);
 
-        ArrayList<KVPair<String, String>> result =
-            list.search("apple");
+        ArrayList<KVPair<String, String>> result = list.search("apple");
 
         assertEquals(1, result.size());
         assertEquals(pair, result.get(0));
@@ -117,26 +116,25 @@ public class SkipListTest
         assertEquals(pair, list.removeByValue("value1"));
         assertEquals(0, list.size());
     }
-    
+
+
     /**
      * Tests inserting multiple values with the same key.
      */
-    public void testDuplicateNames() 
+    public void testDuplicateNames()
     {
         TestableRandom.setNextBooleans(false, false);
 
-        list.insert(
-            new KVPair<String, String>("apple", "value1"));
+        list.insert(new KVPair<String, String>("apple", "value1"));
 
-        list.insert(
-            new KVPair<String, String>("apple", "value2"));
+        list.insert(new KVPair<String, String>("apple", "value2"));
 
-        ArrayList<KVPair<String, String>> results =
-            list.search("apple");
+        ArrayList<KVPair<String, String>> results = list.search("apple");
 
         assertEquals(2, results.size());
     }
-    
+
+
     /**
      * Tests removing one of two entries with the same key.
      */
@@ -187,8 +185,8 @@ public class SkipListTest
         assertEquals(0, list.size());
         assertFalse(list.iterator().hasNext());
     }
-    
-    
+
+
     /**
      * Tests searching an empty list.
      */
@@ -196,28 +194,27 @@ public class SkipListTest
     {
         assertTrue(list.search("apple").isEmpty());
     }
-    
-    
+
+
     /**
-     * Tests searching for first, middle, last,
-     * and nonexistent keys.
+     * Tests searching for first, middle, last, and nonexistent keys.
      */
     public void testSearchDifferentPositions()
     {
         list.insert(new KVPair<String, String>("apple", "A"));
         list.insert(new KVPair<String, String>("banana", "B"));
         list.insert(new KVPair<String, String>("cherry", "C"));
-    
+
         assertEquals(1, list.search("apple").size());
         assertEquals(1, list.search("banana").size());
         assertEquals(1, list.search("cherry").size());
-    
+
         assertTrue(list.search("aardvark").isEmpty());
         assertTrue(list.search("blueberry").isEmpty());
         assertTrue(list.search("zebra").isEmpty());
     }
-    
-    
+
+
     /**
      * Tests duplicate keys.
      */
@@ -226,11 +223,11 @@ public class SkipListTest
         list.insert(new KVPair<String, String>("apple", "A"));
         list.insert(new KVPair<String, String>("apple", "B"));
         list.insert(new KVPair<String, String>("apple", "C"));
-    
+
         assertEquals(3, list.search("apple").size());
     }
-    
-    
+
+
     /**
      * Tests removing keys from different positions.
      */
@@ -239,18 +236,18 @@ public class SkipListTest
         list.insert(new KVPair<String, String>("apple", "A"));
         list.insert(new KVPair<String, String>("banana", "B"));
         list.insert(new KVPair<String, String>("cherry", "C"));
-    
+
         assertNull(list.remove("missing"));
-    
+
         assertNotNull(list.remove("banana"));
         assertNotNull(list.remove("apple"));
         assertNotNull(list.remove("cherry"));
-    
+
         assertEquals(0, list.size());
         assertNull(list.remove("apple"));
     }
-    
-    
+
+
     /**
      * Tests removing one of multiple duplicate keys.
      */
@@ -258,17 +255,17 @@ public class SkipListTest
     {
         list.insert(new KVPair<String, String>("apple", "A"));
         list.insert(new KVPair<String, String>("apple", "B"));
-    
+
         assertNotNull(list.remove("apple"));
         assertEquals(1, list.size());
-    
+
         assertNotNull(list.remove("apple"));
         assertEquals(0, list.size());
-    
+
         assertNull(list.remove("apple"));
     }
-    
-    
+
+
     /**
      * Tests removing values from different positions.
      */
@@ -277,17 +274,17 @@ public class SkipListTest
         list.insert(new KVPair<String, String>("apple", "A"));
         list.insert(new KVPair<String, String>("banana", "B"));
         list.insert(new KVPair<String, String>("cherry", "C"));
-    
+
         assertNull(list.removeByValue("missing"));
-    
+
         assertNotNull(list.removeByValue("B"));
         assertNotNull(list.removeByValue("A"));
         assertNotNull(list.removeByValue("C"));
-    
+
         assertEquals(0, list.size());
     }
-    
-    
+
+
     /**
      * Tests removing values from an empty list.
      */
@@ -295,50 +292,46 @@ public class SkipListTest
     {
         assertNull(list.removeByValue("A"));
     }
-    
-    
+
+
     /**
      * Tests dumping empty and populated lists.
      */
     public void testDumpCoverage()
     {
         list.dump();
-    
-        assertTrue(systemOut().getHistory().contains(
-            "SkipList size is: 0"));
-    
+
+        assertTrue(systemOut().getHistory().contains("SkipList size is: 0"));
+
         list.insert(new KVPair<String, String>("apple", "A"));
         list.insert(new KVPair<String, String>("banana", "B"));
-    
+
         list.dump();
-    
-        assertTrue(systemOut().getHistory().contains(
-            "SkipList size is: 2"));
+
+        assertTrue(systemOut().getHistory().contains("SkipList size is: 2"));
     }
-    
-    
+
+
     /**
      * Tests iterator behavior on empty and populated lists.
      */
     public void testIteratorCoverage()
     {
-        java.util.Iterator<KVPair<String, String>> empty =
-            list.iterator();
-    
+        java.util.Iterator<KVPair<String, String>> empty = list.iterator();
+
         assertFalse(empty.hasNext());
-    
+
         list.insert(new KVPair<String, String>("apple", "A"));
         list.insert(new KVPair<String, String>("banana", "B"));
-    
-        java.util.Iterator<KVPair<String, String>> iter =
-            list.iterator();
-    
+
+        java.util.Iterator<KVPair<String, String>> iter = list.iterator();
+
         assertTrue(iter.hasNext());
         assertEquals("apple", iter.next().key());
-    
+
         assertTrue(iter.hasNext());
         assertEquals("banana", iter.next().key());
-    
+
         assertFalse(iter.hasNext());
     }
 
@@ -350,42 +343,37 @@ public class SkipListTest
     {
         student.TestableRandom.setNextBooleans(false);
         assertEquals(0, list.randomLevel());
-    
+
         student.TestableRandom.setNextBooleans(true, false);
         assertEquals(1, list.randomLevel());
-    
+
         student.TestableRandom.setNextBooleans(true, true, false);
         assertEquals(2, list.randomLevel());
     }
-    
 
-    
+
     /**
-     * Tests inserting nodes with different randomly generated levels
-     * and verifies that searching and removing nodes work correctly.
-     */
+     * Tests inserting nodes with different randomly generated levels and
+     * verifies that searching and removing nodes work correctly.
+    */
     public void testDifferentNodeLevels()
     {
-        student.TestableRandom.setNextBooleans(
-            false,
-            true, true, false,
-            true, false,
-            false);
-    
+        student.TestableRandom
+            .setNextBooleans(false, true, true, false, true, false, false);
+
         list.insert(new KVPair<String, String>("apple", "A"));
         list.insert(new KVPair<String, String>("banana", "B"));
         list.insert(new KVPair<String, String>("cherry", "C"));
         list.insert(new KVPair<String, String>("date", "D"));
-    
+
         assertEquals(4, list.size());
-    
+
         assertEquals(1, list.search("banana").size());
-    
+
         assertNotNull(list.remove("banana"));
         assertNotNull(list.removeByValue("C"));
-    
+
         assertEquals(2, list.size());
     }
-    
-        
+
 }
